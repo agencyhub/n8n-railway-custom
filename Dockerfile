@@ -1,6 +1,6 @@
 FROM node:alpine
 
-ARG N8N_VERSION=latest
+ARG N8N_VERSION=1.53.1
 ARG PGPASSWORD
 ARG PGHOST
 ARG PGPORT
@@ -25,20 +25,11 @@ ENV N8N_BASIC_AUTH_PASSWORD=$PASSWORD
 
 ENV N8N_USER_ID=root
 
-RUN apk add --update graphicsmagick tzdata
-
-USER root
-
-RUN apk --update add --virtual build-dependencies python3 build-base && \
-    npm_config_user=root npm install --location=global n8n@${N8N_VERSION} && \
-    apk del build-dependencies
+RUN apk add --update graphicsmagick tzdata python3 build-base
+RUN npm install --location=global n8n@${N8N_VERSION} turndown
 
 WORKDIR /data
 
 EXPOSE $PORT
 
-CMD export N8N_PORT=$PORT && n8n start
-
-
-
-
+CMD ["sh", "-c", "export N8N_PORT=$PORT && n8n start"]
